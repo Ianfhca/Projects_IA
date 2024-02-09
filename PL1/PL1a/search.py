@@ -73,55 +73,48 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-    print("Start:", problem.getStartState())
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))
-
-    visited = set()  # Utilizamos un conjunto para mantener un seguimiento eficiente de los estados visitados
+    visited = set()
     stack = util.Stack()
-    stack.push((problem.getStartState(), []))  # Guardamos el estado y la lista de acciones tomadas hasta este momento
+    stack.push((problem.getStartState(), []))
 
     while not stack.isEmpty():
         state, actions = stack.pop()
 
-        if state in visited:
-            continue
-        visited.add(state)
-
         if problem.isGoalState(state):
             return actions
 
+        if state not in visited:
+            visited.add(state)
+
         for successor, action, _ in problem.getSuccessors(state):
-            stack.push((successor, actions + [action]))  # Agregamos la nueva acción al camino
-
-    return [] 
-
-
-
-
-
-    """visited = util.Queue()
-    queue = util.Queue()
-    queue.push(problem.getStartState())
-    while not queue.isEmpty():
-        state = queue.pop()
+            if successor not in visited:
+                stack.push((successor, actions + [action]))
     
+    return []
+
+    """
+    visited = set()
+    stack = util.Stack()
+    stack.push((problem.getStartState(), []))
+
+    while not stack.isEmpty():
+        state, actions = stack.pop()
+
         if problem.isGoalState(state):
-            #print("Exito")
-            return [queue]
-        else:
-            #print("Fallo")
-            successors = problem.getSuccessors(state)
-            for successor in successors:
-                queue.push(successor[0])
-    return []"""
-    """    if not state in visited:
-            visited.push(state)
-            for succesor in problem.getSuccessors(state):
-                if not succesor in visited:
-                    queue.push(succesor[0])
+            return actions
+        
+        if state not in visited:
+                visited.add(state)
+
+        for successor, action, _ in problem.getSuccessors(state):
+            print("Successor: ", state)
+            if successor not in visited:
+                visited.add(successor)
+                stack.push((successor, actions + [action]))
+    
     return []
     """
+
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):

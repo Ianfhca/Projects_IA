@@ -161,13 +161,14 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     #pqElem=util.Queue()
     #pqCaminos=util.Queue()
 
-    visitados=[]
-    visitados.append(problem.getStartState())
+    #visitados=[]
+    #visitados.append(problem.getStartState())
 
-    
     sucesores=problem.getSuccessors(problem.getStartState())
+    expandidos=[problem.getStartState()]
+
     for i in range(0,len(sucesores)):
-        visitados.append(sucesores[i][0])
+        #visitados.append(sucesores[i][0])
         g=sucesores[i][2]
         h=heuristic(sucesores[i][0],problem)
         coste=g+h
@@ -182,15 +183,18 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         iter=iter+1
         nextElem=pqElem.pop()     
         camino=pqCaminos.pop()
-        print("elem: ",nextElem)
+        #print("elem: ",nextElem)
         if problem.isGoalState(nextElem[0]):
             #print("Solucion encontrada: ",camino)
             return camino
-        sucesores=problem.getSuccessors(nextElem[0])
-        
-        for i in range(0,len(sucesores)):
-            if not sucesores[i][0] in visitados:
-                visitados.append(sucesores[i][0])
+        #sucesores=problem.getSuccessors(nextElem[0])
+        if not nextElem[0] in expandidos: 
+            sucesores=problem.getSuccessors(nextElem[0])
+            expandidos.append(nextElem[0])
+
+            for i in range(0,len(sucesores)):
+            #if not sucesores[i][0] in visitados:
+                #visitados.append(sucesores[i][0])
                 #g=util.manhattanDistance(sucesores[i][0],problem.getStartState())
                 g=nextElem[2]+sucesores[i][2]
                 h=heuristic(sucesores[i][0],problem)

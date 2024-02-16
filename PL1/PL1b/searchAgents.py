@@ -278,15 +278,26 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-        self.remainingCornersToVisit = [self.corners[:]]
+        self.remainingCornersToVisit=[]
+        for i in range(0,len(self.corners)):
+            self.remainingCornersToVisit.append(self.corners[i])
 
+        """
+        self.remainingCornersToVisit=[]
+        for i in range(0,len(self.corners)):
+            self.remainingCornersToVisit.append([])
+            for j in range(0,len(self.corners[i])):
+                self.remainingCornersToVisit[i].append(self.corners[i][j])
+        """
+        print(" ------- > ",self.remainingCornersToVisit)
+        
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
         "*** YOUR CODE HERE ***"
-        return self.startingPosition()
+        return self.startingPosition
         
 
     def isGoalState(self, state):
@@ -294,7 +305,38 @@ class CornersProblem(search.SearchProblem):
         Returns whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        return len(self.remainingCornersToVisit)==1 and self.corners[0]==state
+
+        
+        #print("self.remainingCornersToVisit: ",self.remainingCornersToVisit)
+        #print("len(self.remainingCornersToVisit): ",len(self.remainingCornersToVisit))
+        if len(self.remainingCornersToVisit)==1 and self.remainingCornersToVisit[0]==state:
+                return True
+        else:
+            #print("len(self.remainingCornersToVisit): ",len(self.remainingCornersToVisit))
+            #print("range(0,len(self.remainingCornersToVisit)): ",range(0,len(self.remainingCornersToVisit)))
+            #print("self.remainingCornersToVisit: ",self.remainingCornersToVisit)
+            #print("state: ",state)
+            for i in range(0,len(self.remainingCornersToVisit)-1):
+                #print("i: ",i)
+                if state==self.remainingCornersToVisit[i]:
+                    print("Corner ",i, "found in ",state)
+                    self.remainingCornersToVisit.remove(self.remainingCornersToVisit[i])
+                    self.pqElem=util.PriorityQueue()
+                    self.pqCaminos=util.PriorityQueue()
+                    sucesores=self.getSuccessors(state)
+                    self.expandidos=[state]
+                    for i in range(0,len(sucesores)):
+                        print("i: ",i)
+                        copia=self.camino[:]
+                        copia.append(sucesores[i][1])
+                        cost=self.getCostOfActions(copia)
+                        self.pqElem.push(sucesores[i][:],cost)
+                        self.pqCaminos.push(copia,cost)
+                        
+                    
+            
+        return False
+        #return len(self.remainingCornersToVisit)==1 and self.corners[0]==state
 
     def getSuccessors(self, state):
         """
@@ -316,9 +358,10 @@ class CornersProblem(search.SearchProblem):
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
             if not hitsWall:
-                successors.append((state,action,1))
+                successors.append(((nextx, nexty),action,1))
+        #print(state, "-->",successors)
+        "*** YOUR CODE HERE ***"
 
-            "*** YOUR CODE HERE ***"
 
         self._expanded += 1 # DO NOT CHANGE
         return successors

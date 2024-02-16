@@ -156,6 +156,76 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     #for i in range(0,len(problem.getSuccessors(problem.getStartState()))):
         #print("---> ",problem.getSuccessors(problem.getSuccessors(problem.getStartState())[i][0]))
 
+    problem.pqElem=util.PriorityQueue()
+    problem.pqCaminos=util.PriorityQueue()
+    #pqElem=util.Queue()
+    #pqCaminos=util.Queue()
+
+    #visitados=[]
+    #visitados.append(problem.getStartState())
+
+    sucesores=problem.getSuccessors(problem.getStartState())
+    problem.expandidos=[problem.getStartState()]
+
+    for i in range(0,len(sucesores)):
+        #visitados.append(sucesores[i][0])
+        g=sucesores[i][2]
+        h=heuristic(sucesores[i][0],problem)
+        coste=g+h
+        problem.pqElem.push(sucesores[i][:],coste)
+        problem.pqCaminos.push([sucesores[i][1]],coste)
+        #pqElem.push(sucesores[i][:])
+        #pqCaminos.push([sucesores[i][1]])
+    iter=0
+    print("stack inicial: ",sucesores[:][:])
+    
+    while(not problem.pqElem.isEmpty()):
+        #print("expandidos: ",problem.expandidos)
+        iter=iter+1
+        problem.nextElem=problem.pqElem.pop()     
+        problem.camino=problem.pqCaminos.pop()
+        print(problem.camino)
+        #print("elem: ",nextElem)
+        if problem.isGoalState(problem.nextElem[0]):
+            print("Solucion encontrada: ",problem.camino)
+            return problem.camino
+        #sucesores=problem.getSuccessors(nextElem[0])
+        if not problem.nextElem[0] in problem.expandidos: 
+            sucesores=problem.getSuccessors(problem.nextElem[0])
+            problem.expandidos.append(problem.nextElem[0])
+
+            for i in range(0,len(sucesores)):
+            #if not sucesores[i][0] in visitados:
+                #visitados.append(sucesores[i][0])
+                #g=util.manhattanDistance(sucesores[i][0],problem.getStartState())
+                g=problem.nextElem[2]+sucesores[i][2]
+                h=heuristic(sucesores[i][0],problem)
+                coste=g+h
+                copiaCamino=[]
+                copiaCamino=problem.camino[:]
+                copiaCamino.append(sucesores[i][1])
+                s=[]
+                for f in range(0,len(sucesores)):
+                    s.append(list(sucesores[f][:]))
+                #print("s : ",s)
+                s[i][2]+=problem.nextElem[2]
+                sucesores=tuple(s)
+                #print("coste ",sucesores[i][0]," = ",sucesores[i][2])
+                problem.pqElem.push(sucesores[i][:],coste)
+                problem.pqCaminos.push(copiaCamino,coste)
+                #pqElem.push(sucesores[i][:])
+                #pqCaminos.push(copiaCamino)
+    print("saliendo del bucle.")
+    return []
+
+def aStarSearchCOPIA(problem, heuristic=nullHeuristic):
+    """Search the node that has the lowest combined cost and heuristic first."""
+    "*** YOUR CODE HERE ***"
+
+    #print("-> ",problem.getSuccessors(problem.getStartState()))
+    #for i in range(0,len(problem.getSuccessors(problem.getStartState()))):
+        #print("---> ",problem.getSuccessors(problem.getSuccessors(problem.getStartState())[i][0]))
+
     pqElem=util.PriorityQueue()
     pqCaminos=util.PriorityQueue()
     #pqElem=util.Queue()
@@ -180,12 +250,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     print("stack inicial: ",sucesores[:][:])
     
     while(not pqElem.isEmpty()):
+        print("expandidos: ",expandidos)
         iter=iter+1
         nextElem=pqElem.pop()     
         camino=pqCaminos.pop()
         #print("elem: ",nextElem)
         if problem.isGoalState(nextElem[0]):
-            #print("Solucion encontrada: ",camino)
+            print("Solucion encontrada: ",camino)
             return camino
         #sucesores=problem.getSuccessors(nextElem[0])
         if not nextElem[0] in expandidos: 

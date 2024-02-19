@@ -19,6 +19,7 @@ class ReflexAgent(Agent):
     """
 
 
+    #calcula la mejor siguiente accion posible y devuelve la siguiente accion que va a hacer pacman
     def getAction(self, gameState):
         """
         You do not need to change this method, but you're welcome to.
@@ -32,15 +33,34 @@ class ReflexAgent(Agent):
         legalMoves = gameState.getLegalActions()
 
         # Choose one of the best actions
+        
         scores = [self.evaluationFunction(gameState, action) for action in legalMoves]
         bestScore = max(scores)
         bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
+        
 
         "Add more of your code here if you want to"
 
+        #calcular la distancia entre fantasma y todas las bolitas
+
+        #elegir la bolita más alejada del fantasma
+
+        #calcular posibles nuevas soluciones
+
+        #añadir posición actual
+
+        #calcular el score = distanciaManhattan(posibles movimientos, bolita más alejada)
+
+        #si distanciaManhattan(posibles movimientos, fantasma) <= 1: eliminar ese movimiento
+
+        #devolver posicion con mayor score
+
+        #return successorGameState.getScore()
+
         return legalMoves[chosenIndex]
 
+    #evalua como de bueno es un movimiento y devuelve un score (cuando mayor, mejor es el movimiento)
     def evaluationFunction(self, currentGameState, action):
         """
         Design a better evaluation function here.
@@ -64,7 +84,67 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        return successorGameState.getScore()
+
+        print("old action: ",action)
+        position=list(currentGameState.getPacmanPosition())
+        print("pos: ",position)
+
+        if action=="North":
+            position[1]+=1
+        elif action=="South":
+            position[1]-=1
+        elif action=="East":
+            position[0]+=1
+        elif action=="West":
+            position[0]-=1
+        else:
+            None
+
+        action=position
+
+        print("new action: ",action)
+
+        print("numero de agentes = ",len(currentGameState.data.agentStates))
+        distToGhost=util.manhattanDistance(action,currentGameState.getGhostPosition(1))
+
+        if distToGhost>2:
+            foodPositions=[]
+            for i in range(0,newFood.width):
+                for j in range(0,newFood.height):
+                    if newFood[i][j]==True:
+                        foodPositions.append((i,j))
+            dists=[util.manhattanDistance(foodPos,action)+0.1 for foodPos in foodPositions]
+            nearestDist=min(dists)
+            return 1/nearestDist
+            #index= dists.index(nearestDist)
+            #nearestFood=foodPositions[index]
+        else:
+            return util.manhattanDistance(action,currentGameState.getGhostPosition(1))
+
+    
+
+        "*    GO TO FURTHER FOOD FROM GHOST              *"
+
+        """
+        foodPositions=[]
+        for i in range(0,newFood.width):
+            for j in range(0,newFood.height):
+                if newFood[i][j]==True:
+                    foodPositions.append((i,j))
+        
+        dists=[util.manhattanDistance(foodPos,currentGameState.getGhostPosition(1)) for foodPos in foodPositions]
+
+        furtherDist=min(dists)
+        index= dists.index(furtherDist)
+        furtherFoodFromGhost=foodPositions[index]
+        print("furtherFoodFromGhost: ",furtherFoodFromGhost)
+        print("Ghost:",currentGameState.getGhostPosition(1),", Pacman:",currentGameState.getPacmanPosition())
+        print("Action:",action,", score: ",util.manhattanDistance(action,furtherFoodFromGhost))
+        return util.manhattanDistance(action,furtherFoodFromGhost)
+        """
+
+
+        "   "
 
 def scoreEvaluationFunction(currentGameState):
     """

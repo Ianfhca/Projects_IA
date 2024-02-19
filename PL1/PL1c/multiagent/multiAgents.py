@@ -79,15 +79,19 @@ class ReflexAgent(Agent):
         # Useful information you can extract from a GameState (pacman.py)
         successorGameState = currentGameState.generatePacmanSuccessor(action)
         newPos = successorGameState.getPacmanPosition()
-        newFood = successorGameState.getFood()
+
+
+        #newFood = successorGameState.getFood()
+        newFood = currentGameState.getFood()
+
         newGhostStates = successorGameState.getGhostStates()
-        newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+        #newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
 
-        print("old action: ",action)
+        #print("old action: ",action)
         position=list(currentGameState.getPacmanPosition())
-        print("pos: ",position)
+        #print("pos: ",position)
 
         if action=="North":
             position[1]+=1
@@ -102,9 +106,9 @@ class ReflexAgent(Agent):
 
         action=position
 
-        print("new action: ",action)
+        #print("new action: ",action)
 
-        print("numero de agentes = ",len(currentGameState.data.agentStates))
+        #print("numero de agentes = ",len(currentGameState.data.agentStates))
         distToGhost=util.manhattanDistance(action,currentGameState.getGhostPosition(1))
 
         if distToGhost>2:
@@ -113,13 +117,22 @@ class ReflexAgent(Agent):
                 for j in range(0,newFood.height):
                     if newFood[i][j]==True:
                         foodPositions.append((i,j))
+            #dists=[util.manhattanDistance(foodPos,action)+0.1 for foodPos in foodPositions]
             dists=[util.manhattanDistance(foodPos,action)+0.1 for foodPos in foodPositions]
             nearestDist=min(dists)
             return 1/nearestDist
             #index= dists.index(nearestDist)
             #nearestFood=foodPositions[index]
         else:
-            return util.manhattanDistance(action,currentGameState.getGhostPosition(1))
+            foodPositions=[]
+            for i in range(0,newFood.width):
+                for j in range(0,newFood.height):
+                    if newFood[i][j]==True:
+                        foodPositions.append((i,j))
+            #dists=[util.manhattanDistance(foodPos,action)+0.1 for foodPos in foodPositions]
+            dists=[util.manhattanDistance(foodPos,action)+0.1 for foodPos in foodPositions]
+            nearestDist=min(dists)
+            return 0.9*util.manhattanDistance(action,currentGameState.getGhostPosition(1))+0.1*(1/nearestDist)
 
     
 

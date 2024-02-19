@@ -93,27 +93,123 @@ def depthFirstSearch(problem):
     return []
 
 def breadthFirstSearch(problem):
+    problem.expanded=[]
+    problem.pqElem=util.PriorityQueue()
+    problem.pqCaminos = util.PriorityQueue()
+    successors=problem.getSuccessors(problem.getStartState())
+    problem.expanded.append(problem.getStartState())
+    for successor in successors:
+        problem.pqElem.push(successor,1)
+        problem.pqCaminos.push([],1)
+    #nueva=[]
+    while not problem.pqElem.isEmpty():
+        elem=problem.pqElem.pop()
+        problem.camino=problem.pqCaminos.pop()
+        print(" --- Analizando ",elem," ---")
+        if problem.isGoalState(elem[0]):
+            print("Camino encontrado!")
+            return problem.camino
+        else:
+            successors=problem.getSuccessors(elem[0])
+            print("sucesores: ",successor)
+            for successor in successors:
+                if not successor[0] in problem.expanded:
+                    problem.expanded.append(successor[0])
+                    copia=problem.camino[:]
+                    copia.append(successor[1])
+                    print("Appending ",successor, " with camino:")
+                    print(problem.camino)
+                    problem.pqElem.push(successor,1)
+                    problem.pqCaminos.push(copia,1)
+                    #problem.pqElem.push(successor,problem.getCostOfActions(copia))
+                    #problem.pqCaminos.push(copia,problem.getCostOfActions(copia))
+
+
+
+def breadthFirstSearch22(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
-    visited = set()
-    queue = util.Queue()
-    queue.push((problem.getStartState(), []))
+    problem.expanded = [problem.getStartState()]
+    problem.pqElem = util.PriorityQueue()
+    problem.pqCaminos = util.PriorityQueue()
+    successors=problem.getSuccessors(problem.getStartState())
+    for successor in successors:
+        problem.pqElem.push(successor,1)
+    problem.pqCaminos.push([],1)
 
-    while not queue.isEmpty():
-        state, actions = queue.pop()
+    while not problem.pqElem.isEmpty():
+        elem=problem.pqElem.pop()
+        print("Analizando ",elem)
+        state=elem[0]
+        
+        
+        actions = problem.pqCaminos.pop()
 
         if problem.isGoalState(state):
             return actions
 
-        if state not in visited:
-            visited.add(state)
+        if state not in problem.expanded:
+            problem.expanded.append(state)
 
-        for successor, action, _ in problem.getSuccessors(state):
-            if successor not in visited:
-                visited.add(successor)
-                queue.push((successor, actions + [action]))
+        #print("problem.getSuccessors(state) :",problem.getSuccessors(state))
+            print("state: ",state)
+            
+        successors=problem.getSuccessors(state)
+
+        #for successor, action, _ in problem.getSuccessors(state):
+        for successor in successors:
+            if successor not in problem.expanded:
+                print("Expandiendo ",successor)
+                problem.expanded.append(successor[0])
+                #queue.push((successor, actions + [action]))
+                problem.pqElem.push(successor,1)
+                copia=actions[:]
+                copia.append(successor[1])
+                print("Camino: ",copia)
+                problem.pqCaminos.push(copia,1)
     
     return []
+
+def breadthFirstSearchCOPIA(problem):
+    """Search the shallowest nodes in the search tree first."""
+    "*** YOUR CODE HERE ***"
+    problem.expanded = []
+    problem.pqElem = util.Queue()
+    problem.pqCaminos = util.Queue()
+    problem.pqElem.push(problem.getStartState())
+    problem.pqCaminos.push([])
+
+    while not problem.pqElem.isEmpty():
+        state=problem.pqElem.pop()
+        
+        
+        actions = problem.pqCaminos.pop()
+
+        if problem.isGoalState(state):
+            return actions
+
+        if state not in problem.expanded:
+            problem.expanded.append(state)
+
+        #print("problem.getSuccessors(state) :",problem.getSuccessors(state))
+            print("state: ",state)
+            
+        successors=problem.getSuccessors(state)
+
+        #for successor, action, _ in problem.getSuccessors(state):
+        for successor in successors:
+            if successor not in problem.expanded:
+                print("Expandiendo ",successor)
+                problem.expanded.append(successor[0])
+                #queue.push((successor, actions + [action]))
+                problem.pqElem.push(successor[0])
+                copia=actions[:]
+                copia.append(successor[1])
+                print("Camino: ",copia)
+                problem.pqCaminos.push(copia)
+    
+    return []
+
     
 
 def uniformCostSearch(problem):
@@ -184,10 +280,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         iter=iter+1
         problem.nextElem=problem.pqElem.pop()     
         problem.camino=problem.pqCaminos.pop()
-        print(problem.camino)
+        #print(problem.camino)
         #print("elem: ",nextElem)
         if problem.isGoalState(problem.nextElem[0]):
-            print("Solucion encontrada: ",problem.camino)
+            #print("Solucion encontrada: ",problem.camino)
             return problem.camino
         #sucesores=problem.getSuccessors(nextElem[0])
         if not problem.nextElem[0] in problem.expandidos: 
@@ -226,8 +322,8 @@ def aStarSearchCOPIA(problem, heuristic=nullHeuristic):
     #for i in range(0,len(problem.getSuccessors(problem.getStartState()))):
         #print("---> ",problem.getSuccessors(problem.getSuccessors(problem.getStartState())[i][0]))
 
-    pqElem=util.PriorityQueue()
-    pqCaminos=util.PriorityQueue()
+    problem.pqElem=util.PriorityQueue()
+    problem.pqCaminos=util.PriorityQueue()
     #pqElem=util.Queue()
     #pqCaminos=util.Queue()
 
@@ -235,53 +331,54 @@ def aStarSearchCOPIA(problem, heuristic=nullHeuristic):
     #visitados.append(problem.getStartState())
 
     sucesores=problem.getSuccessors(problem.getStartState())
-    expandidos=[problem.getStartState()]
+    problem.expandidos=[problem.getStartState()]
 
     for i in range(0,len(sucesores)):
         #visitados.append(sucesores[i][0])
         g=sucesores[i][2]
         h=heuristic(sucesores[i][0],problem)
         coste=g+h
-        pqElem.push(sucesores[i][:],coste)
-        pqCaminos.push([sucesores[i][1]],coste)
+        problem.pqElem.push(sucesores[i][:],coste)
+        problem.pqCaminos.push([sucesores[i][1]],coste)
         #pqElem.push(sucesores[i][:])
         #pqCaminos.push([sucesores[i][1]])
     iter=0
     print("stack inicial: ",sucesores[:][:])
     
-    while(not pqElem.isEmpty()):
-        print("expandidos: ",expandidos)
+    while(not problem.pqElem.isEmpty()):
+        #print("expandidos: ",problem.expandidos)
         iter=iter+1
-        nextElem=pqElem.pop()     
-        camino=pqCaminos.pop()
+        problem.nextElem=problem.pqElem.pop()     
+        problem.camino=problem.pqCaminos.pop()
+        #print(problem.camino)
         #print("elem: ",nextElem)
-        if problem.isGoalState(nextElem[0]):
-            print("Solucion encontrada: ",camino)
-            return camino
+        if problem.isGoalState(problem.nextElem[0]):
+            #print("Solucion encontrada: ",problem.camino)
+            return problem.camino
         #sucesores=problem.getSuccessors(nextElem[0])
-        if not nextElem[0] in expandidos: 
-            sucesores=problem.getSuccessors(nextElem[0])
-            expandidos.append(nextElem[0])
+        if not problem.nextElem[0] in problem.expandidos: 
+            sucesores=problem.getSuccessors(problem.nextElem[0])
+            problem.expandidos.append(problem.nextElem[0])
 
             for i in range(0,len(sucesores)):
             #if not sucesores[i][0] in visitados:
                 #visitados.append(sucesores[i][0])
                 #g=util.manhattanDistance(sucesores[i][0],problem.getStartState())
-                g=nextElem[2]+sucesores[i][2]
+                g=problem.nextElem[2]+sucesores[i][2]
                 h=heuristic(sucesores[i][0],problem)
                 coste=g+h
                 copiaCamino=[]
-                copiaCamino=camino[:]
+                copiaCamino=problem.camino[:]
                 copiaCamino.append(sucesores[i][1])
                 s=[]
                 for f in range(0,len(sucesores)):
                     s.append(list(sucesores[f][:]))
                 #print("s : ",s)
-                s[i][2]+=nextElem[2]
+                s[i][2]+=problem.nextElem[2]
                 sucesores=tuple(s)
                 #print("coste ",sucesores[i][0]," = ",sucesores[i][2])
-                pqElem.push(sucesores[i][:],coste)
-                pqCaminos.push(copiaCamino,coste)
+                problem.pqElem.push(sucesores[i][:],coste)
+                problem.pqCaminos.push(copiaCamino,coste)
                 #pqElem.push(sucesores[i][:])
                 #pqCaminos.push(copiaCamino)
     print("saliendo del bucle.")

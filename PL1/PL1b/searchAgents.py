@@ -281,6 +281,12 @@ class CornersProblem(search.SearchProblem):
         self.remainingCornersToVisit=[]
         for i in range(0,len(self.corners)):
             self.remainingCornersToVisit.append(self.corners[i])
+        self.pqElem=util.PriorityQueue()
+        self.pqCaminos=util.PriorityQueue()
+        self.camino=[]
+        self.nextElem=()
+        self.expandidos=[]
+        
 
         """
         self.remainingCornersToVisit=[]
@@ -310,6 +316,7 @@ class CornersProblem(search.SearchProblem):
         #print("self.remainingCornersToVisit: ",self.remainingCornersToVisit)
         #print("len(self.remainingCornersToVisit): ",len(self.remainingCornersToVisit))
         if len(self.remainingCornersToVisit)==1 and self.remainingCornersToVisit[0]==state:
+                self.corners=[]
                 return True
         else:
             #print("len(self.remainingCornersToVisit): ",len(self.remainingCornersToVisit))
@@ -319,16 +326,18 @@ class CornersProblem(search.SearchProblem):
             for i in range(0,len(self.remainingCornersToVisit)-1):
                 #print("i: ",i)
                 if state==self.remainingCornersToVisit[i]:
-                    print("Corner ",i, "found in ",state)
+                    print("---------> Corner ",i, "found in ",state)
                     self.remainingCornersToVisit.remove(self.remainingCornersToVisit[i])
-                    self.pqElem=util.PriorityQueue()
-                    self.pqCaminos=util.PriorityQueue()
+                    self.pqElem.__init__()
+                    self.pqCaminos.__init__()
                     sucesores=self.getSuccessors(state)
+                    #print("sucesores: ",sucesores)
                     self.expandidos=[state]
                     for i in range(0,len(sucesores)):
-                        print("i: ",i)
+                        #print("i: ",i)
                         copia=self.camino[:]
                         copia.append(sucesores[i][1])
+                        print("copia: ",copia)
                         cost=self.getCostOfActions(copia)
                         self.pqElem.push(sucesores[i][:],cost)
                         self.pqCaminos.push(copia,cost)
@@ -371,12 +380,16 @@ class CornersProblem(search.SearchProblem):
         Returns the cost of a particular sequence of actions.  If those actions
         include an illegal move, return 999999.  This is implemented for you.
         """
-        if actions == None: return 999999
+        if actions == None: 
+            print("actions: ",actions)
+            return 999999
         x,y= self.startingPosition
         for action in actions:
             dx, dy = Actions.directionToVector(action)
             x, y = int(x + dx), int(y + dy)
-            if self.walls[x][y]: return 999999
+            if self.walls[x][y]:
+                print("Chocando con paredes")
+                return 999999
         return len(actions)
 
 

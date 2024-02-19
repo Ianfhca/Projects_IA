@@ -122,47 +122,20 @@ def uniformCostSearch(problem):
     "*** YOUR CODE HERE ***"
     visited = set()
     pQueue = util.PriorityQueue()
-    pQueue.push((problem.getStartState(), []), problem.getCostOfActions([]))
+    pQueue.push((problem.getStartState(), [], 0), 0)
 
     while not pQueue.isEmpty():
-        state, actions = pQueue.pop()
+        state, actions, cost = pQueue.pop()
 
         if problem.isGoalState(state):
             return actions
-
-        if state not in visited:
-            visited.add(state)
-
-        for successor, action, cost in problem.getSuccessors(state):
-            if successor not in visited or problem.getCostOfActions(actions) < cost:
-                visited.add(successor)
-                pQueue.update((successor, list(actions + [action])), problem.getCostOfActions(actions) + cost)
-                #print(successor, problem.getCostOfActions(actions) + cost)
-
+        else:
+            if state not in visited:
+                visited.add(state)
+                for successor, action, sCost in problem.getSuccessors(state):
+                    if successor not in visited:
+                        pQueue.push((successor, actions + [action], cost + sCost), cost + sCost)
     return []
-    """
-    visited = set()
-    priority_queue = util.PriorityQueue()
-    priority_queue.push((problem.getStartState(), [], 0), 0)
-
-    while not priority_queue.isEmpty():
-        state, actions, total_cost = priority_queue.pop()
-
-        if problem.isGoalState(state):
-            return actions
-
-        if state not in visited:
-            visited.add(state)
-
-        for successor, action, step_cost in problem.getSuccessors(state):
-            if successor not in visited:
-                visited.add(successor)
-                new_actions = actions + [action]
-                new_total_cost = total_cost + step_cost
-                priority_queue.push((successor, new_actions, new_total_cost), new_total_cost)
-    
-    return []
-    """
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):

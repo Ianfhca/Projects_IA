@@ -70,6 +70,7 @@ class ReflexAgent(Agent):
         opposite_directions = {'North': 'South', 'South': 'North', 'East': 'West', 'West': 'East'}
         score = successorGameState.getScore()
         foodDistance = list()
+        ghostDistance = list()
 
         for i in newFood.asList():
             dist = util.manhattanDistance(newPos, i)
@@ -79,13 +80,19 @@ class ReflexAgent(Agent):
             score -= 100
         else:
             for i in range(len(newGhostStates)):
-                #if newScaredTimes[i] != 0:
-                if newGhostStates[i].getPosition() == newPos and newScaredTimes[i] == 0:
-                    score -= 50
-                if util.manhattanDistance(newGhostStates[i].getPosition(), newPos) < 2:
-                    score -= 25
+                dist = util.manhattanDistance(newGhostStates[i].getPosition(), newPos)
+                if newScaredTimes[i] != 0:
+                    ghostDistance.append(dist)
+                else:
+                    if newGhostStates[i].getPosition() == newPos and newScaredTimes[i] == 0:
+                        score -= 50
+                    if dist < 2:
+                        score -= 25
+
+            if len(ghostDistance) > 0:
+                score += 10 / min(ghostDistance)
+
             if len(foodDistance) > 0:
-                
                 if action == opposite_directions.get(lastAction):
                     score -= 1 / min(foodDistance)
                 else:

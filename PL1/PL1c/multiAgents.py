@@ -8,6 +8,8 @@ import random, util
 
 from game import Agent
 
+lastAction = "North"
+
 class ReflexAgent(Agent):
     """
     A reflex agent chooses an action at each choice point by examining
@@ -38,7 +40,8 @@ class ReflexAgent(Agent):
         chosenIndex = random.choice(bestIndices) # Pick randomly among the best
 
         "Add more of your code here if you want to"
-
+        global lastAction
+        lastAction = legalMoves[chosenIndex]
         return legalMoves[chosenIndex]
 
     def evaluationFunction(self, currentGameState, action):
@@ -64,15 +67,31 @@ class ReflexAgent(Agent):
         newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        weight = 0
-        if newFood[newPos[0]][newPos[1]] == True:
-            weight += 1
-        
+        opposite_directions = {'North': 'South', 'South': 'North', 'East': 'West', 'West': 'East'}
+        score = successorGameState.getScore()
+        foodDistance = list()
 
-        print("succ\n", successorGameState)
-        print("pos", newPos)
-        print("Ghost scared ", newScaredTimes)
+        for i in newFood.asList():
+            dist = util.manhattanDistance(newPos, i)
+            foodDistance.append(dist)
 
+        if action == 'Stop':
+            score -= 100
+        else:
+            for i in range(len(newGhostStates)):
+                #if newScaredTimes[i] != 0:
+                if newGhostStates[i].getPosition() == newPos and newScaredTimes[i] == 0:
+                    score -= 50
+                if util.manhattanDistance(newGhostStates[i].getPosition(), newPos) < 2:
+                    score -= 25
+            if len(foodDistance) > 0:
+                
+                if action == opposite_directions.get(lastAction):
+                    score -= 1 / min(foodDistance)
+                else:
+                    score += 1 / min(foodDistance)
+
+        return score
         return successorGameState.getScore()
 
 def scoreEvaluationFunction(currentGameState):
@@ -134,6 +153,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
+        return self.value(gameState, 0)[0]
         util.raiseNotDefined()
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
